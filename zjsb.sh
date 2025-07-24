@@ -3,6 +3,13 @@ export LANG=en_US.UTF-8
 export uuid=${uuid:-''}
 export port_hy2=${hypt:-''}
 export port_vl_re=${vlpt:-''}
+export TOKEN=$TOKEN
+export ZONE_ID=$ZONE_ID
+export RECORD_ID=$RECORD_ID
+export NAME=$NAME
+
+
+
 
 hostname=$(uname -a | awk '{print $2}')
 op=$(cat /etc/redhat-release 2>/dev/null || cat /etc/os-release 2>/dev/null | grep -i pretty_name | cut -d \" -f2)
@@ -30,7 +37,7 @@ installsb(){
 echo
 echo "=========启用Sing-box内核========="
 if [ ! -e "/app/sing-box" ]; then
-curl -Lo "/app/sing-box" -# --retry 2 https://github.com/yonggekkk/ArgoSB/releases/download/argosbx/sing-box-$cpu
+curl -Lo "/app/sing-box" -# --retry 2 https://github.com/xiezeng92/zjsb/releases/download/tar/sing-box-$cpu
 chmod +x "/app/sing-box"
 sbcore=$("/app/sing-box" version 2>/dev/null | awk '/version/{print $NF}')
 echo "已安装Sing-box正式版内核：$sbcore"
@@ -341,14 +348,10 @@ else
     echo "## 安装脚本执行完毕，sing-box 已在后台运行。 ##"
     echo "## 脚本现在将正常退出。                   ##"
     echo "################################################"
-    exit 0
-fi
-
-
-
-
-
-
-
-
-
+    if [ -n "$TOKEN" ] && [ -n "$ZONE_ID" ] && [ -n "$RECORD_ID" ] && [ -n "$NAME" ]; then
+    echo "==> 检测到 Cloudflare 环境变量，准备更新 DNS 记录..."
+    IP=$(curl -s4 ifconfig.me)
+    curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${RECORD_ID}" -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"${NAME}\",\"content\":\"${IP}\",\"ttl\":1,\"proxied\":false}" | grep '"success":true' && echo "DNS ok" || echo "DNS no ok"
+    else
+    echo "==> 未提供完整的 Cloudflare 环境变量，跳过 DNS 更新。"
+    fi
