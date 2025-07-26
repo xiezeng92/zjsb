@@ -45,9 +45,7 @@ fi
 cat > "/app/sb.json" <<EOF
 {
 "log": {
-    "disabled": false,
-    "level": "info",
-    "timestamp": true
+    "level": "fatal"
   },
   "inbounds": [
 EOF
