@@ -265,4 +265,4 @@ echo "---------------------------------------------------------"
     else
     echo "==> 未提供完整的 Cloudflare 环境变量，跳过 DNS 更新。"
     fi
- exec /app/sing-box  run -c /app/sb.json  
+exec "$@"
