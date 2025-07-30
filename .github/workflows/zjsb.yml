@@ -24,7 +24,7 @@ jobs:
         name: Release version
         id: release_version
         run: |
-          app_version=$(cat version.py |sed -ne "s/APP_VERSION\s=\s'v\(.*\)'/\1/gp")
+          app_version="3.2"
           echo "app_version=${app_version}" >> $GITHUB_ENV
 
       - name: Docker metadata
@@ -32,7 +32,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ github.event.inputs.docker_username }}/nas-tools
+            ${{ github.event.inputs.docker_username }}/zjsb
           tags: |
             type=raw,value=${{ env.app_version }}
             type=raw,value=latest
